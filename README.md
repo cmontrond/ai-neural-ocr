@@ -2,7 +2,7 @@
 
 Fifth Project for COMP 560: Artificial Intelligence at Bridgewater State University.<br>
 
-The goal of this project is to write a program that can recognize and identify letters. The should give you a window on which you can draw a letter.  When drawn, it should use a neural network to identify the letter.
+The goal of this project is to write a program that can recognize and identify letters. The program should give you a window on which you can draw a letter.  When drawn, it should use a neural network to identify the letter.
 
 ## Getting Started
 
