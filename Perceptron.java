@@ -42,6 +42,29 @@ public class Perceptron {
 	// a guess in range 0 to 1 in array "outputs"
 	double getRawPrediction(int[] inputs) {
 		// TODO:
+		this.hidden = new double[this.size];
+		for (int h = 0; h < this.size; h++) {
+			double total = 0.0d;
+			// for each input
+			for (int i = 0; i < inputs.length; i++) {
+				// convert to -1 and 1
+				double theInput = inputs[i] == 0 ? -1.0d : 1.0d;
+				total += this.hiddenweight[h][i] * theInput; // dot product
+			}
+			// bias
+			total += this.hiddenweight[h][-1]
+			// apply threshold and save it
+			this.hidden[h] = Perceptron.sigmoid(total);
+		}
+
+		// repeat this: hidden to output
+		total = 0
+		for (int h = 0; h < this.size; h++) {
+			total += this.outputweight[h] * this.hidden[h];
+		}
+		total += this.outputweight[-1];
+		output = Perceptron.sigmoid(total);
+
 		// 1. rescale the inputs from -1 to 1 and copy them to array inputs
 
 		// 2. compute dot product of inputs times weights for each hidden. do sigmoid of
@@ -49,7 +72,7 @@ public class Perceptron {
 
 		// 3. compute dot product of hidden times weights for each output. do sigmoid
 		// and return it
-		return 0; // replace this
+		return output; // replace this
 	}
 
 	// this trains the perceptron on an array of inputs (1/0) and desired outputs
