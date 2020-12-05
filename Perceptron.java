@@ -4,6 +4,7 @@
 public class Perceptron {
 	private static final double ALPHA = 0.05;
 	private static final double NOISEMAX = 0.4;
+	private static final long CUT_OFF = 100000;
 
 	// weights from hidden to output layers
 	double[] outputweight;
@@ -48,7 +49,7 @@ public class Perceptron {
 			// for each input
 			for (int i = 0; i < inputs.length; i++) {
 				// convert to -1 and 1
-				double theInput = inputs[i] == 0 ? -1.0d : 1.0d;
+				int theInput = inputs[i] == 0 ? -1 : 1;
 				total += this.hiddenweight[h][i] * theInput; // dot product
 			}
 			// bias
@@ -75,12 +76,44 @@ public class Perceptron {
 		return output; // replace this
 	}
 
+	double getTrainError(int[] inputs, int want) {
+		// get the prediction
+		int guess = this.getPrediction(inputs);
+		int error = want - guess;
+		int outputError = error * guess * (1 - guess);
+
+		// get the hidden errors: the error for each hidden node
+		double[] hiddenErrors = new double[this.size];
+		for (int h = 0; h < this.size; h++) {
+			// apply the error to each hidden node according to weight, then differentiate
+			hiddenErrors[h] = this.hidden[h] * (1 - this.hidden[h]) * this.outputweight[h] * outputError;
+		}
+
+		// now, adjust the output weights based on the output error
+		for (int h = 0; h < this.size; h++) {
+			this.outputweight[h] += outputError * this.hidden[h] * Perceptron.ALPHA;
+		}
+		this.outputweight[this.size] = outputError * Perceptron.ALPHA;
+
+		// repeat this process for each hidden node: adjust by the error
+		for (int h = 0; h < this.size; h++) {
+			for (int i = 0; i < this.size; i++) {
+				int theInput = inputs[i] == 0 ? -1 : 1;
+				this.hiddenweight[h][i] += hiddenErrors[h] * theInput * Perceptron.ALPHA;
+			}
+			this.hiddenweight[h][this.size] += hiddenErrors[h] * Perceptron.ALPHA;
+		}
+
+		return error;
+	}
+
 	// this trains the perceptron on an array of inputs (1/0) and desired outputs
 	// (1/0)
 	// the weights are adjusted and errors are saved in array "error". return TRUE
 	// if training is done
 	boolean train(int[] inputs, int want) {
 		// TODO:
+
 		// 1. call getPrediction on inputs. this will put values in hidden and outputs
 		// that we can use for training
 
