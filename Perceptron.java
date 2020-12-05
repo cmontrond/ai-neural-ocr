@@ -52,18 +52,18 @@ public class Perceptron {
 				total += this.hiddenweight[h][i] * theInput; // dot product
 			}
 			// bias
-			total += this.hiddenweight[h][-1]
+			total += this.hiddenweight[h][this.size];
 			// apply threshold and save it
 			this.hidden[h] = Perceptron.sigmoid(total);
 		}
 
 		// repeat this: hidden to output
-		total = 0
+		double total = 0.0d;
 		for (int h = 0; h < this.size; h++) {
 			total += this.outputweight[h] * this.hidden[h];
 		}
-		total += this.outputweight[-1];
-		output = Perceptron.sigmoid(total);
+		total += this.outputweight[this.size];
+		double output = Perceptron.sigmoid(total);
 
 		// 1. rescale the inputs from -1 to 1 and copy them to array inputs
 
