@@ -107,7 +107,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 				char randomLetter = sample_output[randomLetterIndex];
 
 				// If the sample matches the letter you pick, train the perceptron with a 1. If
-				// it doesn't, train with a “0”.
+				// it doesnt, train with a 0.
 				if (sample_output[i] == randomLetter) {
 					// train the perceptron with a 1
 					boolean done = false;
@@ -117,7 +117,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 						done = neuron.train(sample_input[i], 1);
 					}
 				} else {
-					// train with a “0”
+					// train with a 0
 					boolean done = false;
 					// Put the training operation into a while loop, and train until the perceptron
 					// is answering perfectly for all inputs.
@@ -154,6 +154,9 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 
 	private void testXOR() {
 		// Test code for XOR
+
+		System.out.println("Testing for XOR...");
+
 		int[] inputs = new int[2];
 		int[] outputs = new int[2];
 

@@ -78,9 +78,9 @@ public class Perceptron {
 
 	double getTrainError(int[] inputs, int want) {
 		// get the prediction
-		int guess = this.getPrediction(inputs);
-		int error = want - guess;
-		int outputError = error * guess * (1 - guess);
+		double guess = this.getRawPrediction(inputs);
+		double error = want - guess;
+		double outputError = error * guess * (1 - guess);
 
 		// get the hidden errors: the error for each hidden node
 		double[] hiddenErrors = new double[this.size];
@@ -113,6 +113,38 @@ public class Perceptron {
 	// if training is done
 	boolean train(int[] inputs, int want) {
 		// TODO:
+
+		// get the prediction
+		double guess = this.getRawPrediction(inputs);
+		double error = want - guess;
+		double outputError = error * guess * (1 - guess);
+
+		// get the hidden errors: the error for each hidden node
+		double[] hiddenErrors = new double[this.size];
+		for (int h = 0; h < this.size; h++) {
+			// apply the error to each hidden node according to weight, then differentiate
+			hiddenErrors[h] = this.hidden[h] * (1 - this.hidden[h]) * this.outputweight[h] * outputError;
+		}
+
+		// now, adjust the output weights based on the output error
+		for (int h = 0; h < this.size; h++) {
+			this.outputweight[h] += outputError * this.hidden[h] * Perceptron.ALPHA;
+		}
+		this.outputweight[this.size] = outputError * Perceptron.ALPHA;
+
+		// repeat this process for each hidden node: adjust by the error
+		for (int h = 0; h < this.size; h++) {
+			for (int i = 0; i < this.size; i++) {
+				int theInput = inputs[i] == 0 ? -1 : 1;
+				this.hiddenweight[h][i] += hiddenErrors[h] * theInput * Perceptron.ALPHA;
+			}
+			this.hiddenweight[h][this.size] += hiddenErrors[h] * Perceptron.ALPHA;
+		}
+
+		// stop when error < .1
+		if (error > -0.1 && error < 0.1) {
+			return true;
+		}
 
 		// 1. call getPrediction on inputs. this will put values in hidden and outputs
 		// that we can use for training
