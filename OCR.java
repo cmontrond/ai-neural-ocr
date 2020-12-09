@@ -163,7 +163,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		Perceptron firstNeuron = new Perceptron(2);
 		Perceptron secondNeuron = new Perceptron(2);
 
-		long GIVE_UP = 10000;
+		long GIVE_UP = Perceptron.CUT_OFF;
 		int correctCount = 0;
 
 		for (int i = 0; i < GIVE_UP; i++) {
@@ -218,6 +218,8 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 				break;
 		}
 
+		System.out.println("CorrectCount: " + correctCount);
+
 		if (correctCount == 8) {
 			System.out.println("Learned it!");
 		} else {
@@ -244,6 +246,88 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		inputs[1] = 1;
 		System.out.println("The prediction for " + inputs[1] + " " + inputs[0] + ": "
 				+ firstNeuron.getPrediction(inputs) + " " + secondNeuron.getPrediction(inputs));
+	}
+
+	private void doMyTest() {
+		// Test code for My test
+
+		System.out.println("My Test...");
+
+		int[] inputs = new int[2];
+		int output = 0;
+
+		Perceptron neuron = new Perceptron(2);
+
+		long GIVE_UP = 10000;
+		int correctCount = 0;
+
+		for (int i = 0; i < GIVE_UP; i++) {
+
+			correctCount = 0;
+
+			inputs[0] = 0;
+			inputs[1] = 0;
+			output = 0;
+
+			boolean isNeuronRight = neuron.train(inputs, output);
+
+			if (isNeuronRight)
+				correctCount++;
+
+			inputs[0] = 0;
+			inputs[1] = 1;
+			output = 1;
+
+			isNeuronRight = neuron.train(inputs, output);
+
+			if (isNeuronRight)
+				correctCount++;
+
+			inputs[0] = 1;
+			inputs[1] = 0;
+			output = 1;
+
+			isNeuronRight = neuron.train(inputs, output);
+
+			if (isNeuronRight)
+				correctCount++;
+
+			// inputs[0] = 1;
+			// inputs[1] = 1;
+			// output = 0;
+
+			// isNeuronRight = neuron.train(inputs, output);
+
+			// if (isNeuronRight)
+			// correctCount++;
+
+			if (correctCount == 3)
+				break;
+		}
+
+		if (correctCount == 3) {
+			System.out.println("Learned it!");
+		} else {
+			System.out.println("Never learned it!");
+		}
+
+		// Test it: write this four times
+		inputs[0] = 0;
+		inputs[1] = 0;
+		System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": " + neuron.getPrediction(inputs));
+
+		inputs[0] = 0;
+		inputs[1] = 1;
+		System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": " + neuron.getPrediction(inputs));
+
+		inputs[0] = 1;
+		inputs[1] = 0;
+		System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": " + neuron.getPrediction(inputs));
+
+		// inputs[0] = 1;
+		// inputs[1] = 1;
+		// System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": "
+		// + neuron.getPrediction(inputs));
 	}
 
 	// called on "ocr test", after the user draws and right-clicks the mouse
@@ -282,6 +366,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 			constructWindow();
 		else if (operation == TRAIN)
 			// train();
+			// doMyTest();
 			testXOR();
 	}
 

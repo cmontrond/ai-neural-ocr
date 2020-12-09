@@ -2,9 +2,11 @@
 //you need to fill in the getRawPrediction and train functions
 
 public class Perceptron {
-	private static final double ALPHA = 0.05;
+	// private static final double ALPHA = 0.05;
+	// private static final double ALPHA = 0.1;
+	private static final double ALPHA = 0.1;
 	private static final double NOISEMAX = 0.4;
-	private static final long CUT_OFF = 100000;
+	public static final long CUT_OFF = 10000000;
 
 	// weights from hidden to output layers
 	double[] outputweight;
@@ -43,9 +45,12 @@ public class Perceptron {
 	// a guess in range 0 to 1 in array "outputs"
 	double getRawPrediction(int[] inputs) {
 		// TODO:
-		this.hidden = new double[this.size];
+		// this.hidden = new double[this.size];
+
+		int total;
+
 		for (int h = 0; h < this.size; h++) {
-			double total = 0.0d;
+			total = 0;
 			// for each input
 			for (int i = 0; i < inputs.length; i++) {
 				// convert to -1 and 1
@@ -59,7 +64,7 @@ public class Perceptron {
 		}
 
 		// repeat this: hidden to output
-		double total = 0.0d;
+		total = 0;
 		for (int h = 0; h < this.size; h++) {
 			total += this.outputweight[h] * this.hidden[h];
 		}
@@ -121,6 +126,7 @@ public class Perceptron {
 
 		// get the hidden errors: the error for each hidden node
 		double[] hiddenErrors = new double[this.size];
+
 		for (int h = 0; h < this.size; h++) {
 			// apply the error to each hidden node according to weight, then differentiate
 			hiddenErrors[h] = this.hidden[h] * (1 - this.hidden[h]) * this.outputweight[h] * outputError;
@@ -141,10 +147,15 @@ public class Perceptron {
 			this.hiddenweight[h][this.size] += hiddenErrors[h] * Perceptron.ALPHA;
 		}
 
+		// System.out.println("Error: " + error);
+
 		// stop when error < .1
 		if (error > -0.1 && error < 0.1) {
 			return true;
 		}
+		// if (error > 0.1 && error < -0.1) {
+		// return true;
+		// }
 
 		// 1. call getPrediction on inputs. this will put values in hidden and outputs
 		// that we can use for training
@@ -178,6 +189,7 @@ public class Perceptron {
 	// this is mathematically close to the >=0 threshold we use in the single layer
 	// perceptron, but is differentiable
 	static double sigmoid(double x) {
-		return 1.0 / (1.0 + Math.pow(2.71828, -x));
+		// return 1.0 / (1.0 + Math.pow(2.71828, -x));
+		return 1.0 / (1.0 + Math.exp(-x));
 	}
 }
