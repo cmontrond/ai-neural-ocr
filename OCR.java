@@ -148,6 +148,13 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 				break;
 		}
 
+		// if (correctCount == linecount) {
+		// System.out.println("Learned it!");
+		// } else {
+		// System.out.println("Never Learned it!");
+		// System.out.println("Correct Count: " + correctCount);
+		// }
+
 		// Now verify it. After you train, call getPrediction on each sample. Does the
 		// neural network respond correctly?
 
@@ -436,10 +443,24 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		// integer array
 		int[] userInput = this.getSquareData();
 
+		// int[] userInput = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		// 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+		// 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+		// 0, 0, 0, 0, 0, 0, 0, 1, 1,
+		// 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+		// 0, 0, 1, 1, 0, 0, 0, 0, 0,
+		// 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+		// 0, 0, 0, 0, 0, 0, 0, 1, 1,
+		// 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+		// 0, 0, 1, 1, 0, 0, 0, 0, 0,
+		// 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		// 1, 1, 1, 1, 1, 1, 1, };
+
 		// Feed userInput to the perceptron, and print out whether or not it matched the
 		// letter you chose.
 		// TODO
-		System.out.println("Testing user input: ");
+		int prediction = neuron.getPrediction(userInput);
+		System.out.println("Testing if the user drew and A: " + prediction);
 	}
 
 	// returns contents of all squares as array of 1 (filled) 0 (unfilled)
