@@ -96,58 +96,63 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 			// TODO: MAKE NEURAL NET (PERCEPTRON) OBJECTS AND TRAIN THEM HERE, THEN SAVE THE
 			// WEIGHTS TO perceptron.txt
 
-			// Make a Perceptron object with enough inputs for every pixel on the screen and
-			// a single output.
-			Perceptron neuron = new Perceptron(GRIDWIDTH * GRIDHEIGHT);
-
-			// Now go through your sample array
-			for (int i = 0; i < linecount; i++) {
-				// Pick a letter
-				int randomLetterIndex = new Random().nextInt(sample_output.length);
-				char randomLetter = sample_output[randomLetterIndex];
-
-				// If the sample matches the letter you pick, train the perceptron with a 1. If
-				// it doesnt, train with a 0.
-				if (sample_output[i] == randomLetter) {
-					// train the perceptron with a 1
-					boolean done = false;
-					// Put the training operation into a while loop, and train until the perceptron
-					// is answering perfectly for all inputs.
-					while (!done) {
-						done = neuron.train(sample_input[i], 1);
-					}
-				} else {
-					// train with a 0
-					boolean done = false;
-					// Put the training operation into a while loop, and train until the perceptron
-					// is answering perfectly for all inputs.
-					while (!done) {
-						done = neuron.train(sample_input[i], 0);
-					}
-				}
-			}
-
-			// make an output file perceptron.txt, and write all the hidden weights and
-			// output weights
-			try {
-				DataOutputStream perceptronData = new DataOutputStream(new FileOutputStream("perceptron.txt"));
-				for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
-					for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
-						perceptronData.writeDouble(neuron.hiddenweight[i][j]);
-					}
-				}
-				perceptronData.writeChars("\n");
-				for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
-					perceptronData.writeDouble(neuron.outputweight[i]);
-				}
-				perceptronData.close();
-				System.out.println("Wrote perceptron.txt file.");
-			} catch (Exception e) {
-				System.out.println("An error occurred writing to perceptron.txt file: ");
-				e.printStackTrace();
-			}
+			// Step: 2 - Train a perceptron on a single letter
+			trainSingleLetter(sample_input, sample_output);
 
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void trainSingleLetter(int[][] sample_input, char[] sample_output) {
+		// Make a Perceptron object with enough inputs for every pixel on the screen and
+		// a single output.
+		Perceptron neuron = new Perceptron(GRIDWIDTH * GRIDHEIGHT);
+
+		// Now go through your sample array
+		for (int i = 0; i < linecount; i++) {
+			// Pick a letter
+			int randomLetterIndex = new Random().nextInt(sample_output.length);
+			char randomLetter = sample_output[randomLetterIndex];
+
+			// If the sample matches the letter you pick, train the perceptron with a 1. If
+			// it doesnt, train with a 0.
+			if (sample_output[i] == randomLetter) {
+				// train the perceptron with a 1
+				boolean done = false;
+				// Put the training operation into a while loop, and train until the perceptron
+				// is answering perfectly for all inputs.
+				while (!done) {
+					done = neuron.train(sample_input[i], 1);
+				}
+			} else {
+				// train with a 0
+				boolean done = false;
+				// Put the training operation into a while loop, and train until the perceptron
+				// is answering perfectly for all inputs.
+				while (!done) {
+					done = neuron.train(sample_input[i], 0);
+				}
+			}
+		}
+
+		// make an output file perceptron.txt, and write all the hidden weights and
+		// output weights
+		try {
+			DataOutputStream perceptronData = new DataOutputStream(new FileOutputStream("perceptron.txt"));
+			for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+				for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+					perceptronData.writeDouble(neuron.hiddenweight[i][j]);
+				}
+			}
+			perceptronData.writeChars("\n");
+			for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+				perceptronData.writeDouble(neuron.outputweight[i]);
+			}
+			perceptronData.close();
+			System.out.println("Wrote perceptron.txt file.");
+		} catch (Exception e) {
+			System.out.println("An error occurred writing to perceptron.txt file: ");
 			e.printStackTrace();
 		}
 	}
@@ -365,9 +370,9 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		if (operation == SAMPLE || operation == TEST)
 			constructWindow();
 		else if (operation == TRAIN)
-			// train();
-			// doMyTest();
-			testXOR();
+			train();
+		// doMyTest();
+		// testXOR();
 	}
 
 	public OCR(int operation, char letter) {
