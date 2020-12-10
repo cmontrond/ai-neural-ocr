@@ -22,6 +22,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import java.io.*;
+import java.text.NumberFormat;
 import java.util.*;
 
 public class OCR extends JComponent implements MouseListener, MouseMotionListener {
@@ -150,32 +151,43 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		// Now verify it. After you train, call getPrediction on each sample. Does the
 		// neural network respond correctly?
 
-		for (int i = 0; i < linecount; i++) {
-			int prediction = neuron.getPrediction(sample_input[i]);
-			System.out.println("Letter " + sample_output[i] + ": " + prediction);
-		}
+		// for (int i = 0; i < linecount; i++) {
+		// int prediction = neuron.getPrediction(sample_input[i]);
+		// System.out.println("Letter " + sample_output[i] + ": " + prediction);
+		// }
+
+		// System.out.println("Printing hidden weights:");
+		// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+		// for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+		// System.out.println(neuron.hiddenweight[i][j]);
+		// }
+		// }
+
+		// System.out.println("Printing output weights:");
+		// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+		// System.out.println(neuron.outputweight[i]);
+		// }
 
 		// TODO: The code below is for step 3
 		// make an output file perceptron.txt, and write all the hidden weights and
 		// output weights
-		// try {
-		// DataOutputStream perceptronData = new DataOutputStream(new
-		// FileOutputStream("perceptron.txt"));
-		// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
-		// for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
-		// perceptronData.writeDouble(neuron.hiddenweight[i][j]);
-		// }
-		// }
-		// perceptronData.writeChars("\n");
-		// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
-		// perceptronData.writeDouble(neuron.outputweight[i]);
-		// }
-		// perceptronData.close();
-		// System.out.println("Wrote perceptron.txt file.");
-		// } catch (Exception e) {
-		// System.out.println("An error occurred writing to perceptron.txt file: ");
-		// e.printStackTrace();
-		// }
+		try {
+			PrintWriter perceptronData = new PrintWriter(new FileOutputStream(new File("perceptron.txt"), true));
+			for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+				for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+					perceptronData.print(neuron.hiddenweight[i][j] + "\n");
+				}
+			}
+			perceptronData.print("#\n");
+			for (int i = 0; i <= GRIDWIDTH * GRIDHEIGHT; i++) {
+				perceptronData.print(neuron.outputweight[i] + "\n");
+			}
+			perceptronData.close();
+			System.out.println("Wrote perceptron.txt file.");
+		} catch (Exception e) {
+			System.out.println("An error occurred writing to perceptron.txt file: ");
+			e.printStackTrace();
+		}
 	}
 
 	private void testXOR() {
@@ -367,6 +379,58 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		// read the contents of perceptron.txt, and assign the Perceptron object's
 		// weights accordingly
 		// TODO
+		System.out.println("Reading data from perceptron.txt ...");
+		try {
+			Scanner perceptronData = new Scanner(new FileReader("perceptron.txt"));
+
+			for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+				boolean exit = false;
+				for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+					String line = perceptronData.nextLine().trim();
+
+					if (line == "#") {
+						exit = true;
+						break;
+					}
+
+					neuron.hiddenweight[i][j] = Double.parseDouble(line);
+				}
+				if (exit) {
+					break;
+				}
+			}
+
+			perceptronData.nextLine();
+
+			for (int i = 0; i <= GRIDWIDTH * GRIDHEIGHT; i++) {
+				String line = perceptronData.nextLine().trim();
+
+				if (line.length() < 2) {
+					break;
+				}
+
+				neuron.outputweight[i] = Double.parseDouble(line);
+			}
+
+			perceptronData.close();
+
+			System.out.println("Finish reading data from perceptron.txt!");
+
+			// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+			// for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+			// System.out.println("neuron.hiddenweight[" + i + "][" + j + "] -> " +
+			// neuron.hiddenweight[i][j]);
+			// }
+			// }
+
+			// for (int i = 0; i <= GRIDWIDTH * GRIDHEIGHT; i++) {
+			// System.out.println("neuron.outputweight[" + i + "] -> " +
+			// neuron.outputweight[i]);
+			// }
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// Use function getSquareData to read what the user drew on the screen as an
 		// integer array
@@ -375,6 +439,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		// Feed userInput to the perceptron, and print out whether or not it matched the
 		// letter you chose.
 		// TODO
+		System.out.println("Testing user input: ");
 	}
 
 	// returns contents of all squares as array of 1 (filled) 0 (unfilled)
