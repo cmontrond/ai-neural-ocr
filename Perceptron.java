@@ -6,7 +6,7 @@ public class Perceptron {
 	// private static final double ALPHA = 0.1;
 	private static final double ALPHA = 0.1;
 	private static final double NOISEMAX = 0.4;
-	public static final long CUT_OFF = 10000000;
+	public static final long CUT_OFF = 100000;
 
 	// weights from hidden to output layers
 	double[] outputweight;

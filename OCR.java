@@ -20,6 +20,7 @@ ocr test
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -97,64 +98,84 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 			// WEIGHTS TO perceptron.txt
 
 			// Step: 2 - Train a perceptron on a single letter
-			trainSingleLetter(sample_input, sample_output);
+			trainSingleLetter(linecount, sample_input, sample_output);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void trainSingleLetter(int[][] sample_input, char[] sample_output) {
+	private void trainSingleLetter(int linecount, int[][] sample_input, char[] sample_output) {
+
+		System.out.println("Training on a single letter...");
+
 		// Make a Perceptron object with enough inputs for every pixel on the screen and
 		// a single output.
 		Perceptron neuron = new Perceptron(GRIDWIDTH * GRIDHEIGHT);
 
-		// Now go through your sample array
-		for (int i = 0; i < linecount; i++) {
-			// Pick a letter
-			int randomLetterIndex = new Random().nextInt(sample_output.length);
-			char randomLetter = sample_output[randomLetterIndex];
+		int correctCount = 0;
+		char randomLetter = 'A';
 
-			// If the sample matches the letter you pick, train the perceptron with a 1. If
-			// it doesnt, train with a 0.
-			if (sample_output[i] == randomLetter) {
-				// train the perceptron with a 1
-				boolean done = false;
-				// Put the training operation into a while loop, and train until the perceptron
-				// is answering perfectly for all inputs.
-				while (!done) {
-					done = neuron.train(sample_input[i], 1);
+		// Put the training operation into a while loop, and train until the perceptron
+		// is answering perfectly for all inputs.
+		for (int itr = 0; itr < Perceptron.CUT_OFF; itr++) {
+			correctCount = 0;
+			// Now go through your sample array
+			for (int i = 0; i < linecount; i++) {
+				// Pick a letter
+				// int randomLetterIndex = new Random().nextInt(sample_output.length);
+				// char randomLetter = sample_output[randomLetterIndex];
+				// char randomLetter = 'A';
+
+				boolean isCorrect;
+
+				// If the sample matches the letter you pick, train the perceptron with a 1. If
+				// it doesnt, train with a 0.
+				if (sample_output[i] == randomLetter) {
+					// train the perceptron with a 1
+					isCorrect = neuron.train(sample_input[i], 1);
+				} else {
+					// train with a 0
+					isCorrect = neuron.train(sample_input[i], 0);
 				}
-			} else {
-				// train with a 0
-				boolean done = false;
-				// Put the training operation into a while loop, and train until the perceptron
-				// is answering perfectly for all inputs.
-				while (!done) {
-					done = neuron.train(sample_input[i], 0);
-				}
+
+				if (isCorrect)
+					correctCount++;
 			}
+
+			if (correctCount == linecount)
+				break;
 		}
 
+		// Now verify it. After you train, call getPrediction on each sample. Does the
+		// neural network respond correctly?
+
+		for (int i = 0; i < linecount; i++) {
+			int prediction = neuron.getPrediction(sample_input[i]);
+			System.out.println("Letter " + sample_output[i] + ": " + prediction);
+		}
+
+		// TODO: The code below is for step 3
 		// make an output file perceptron.txt, and write all the hidden weights and
 		// output weights
-		try {
-			DataOutputStream perceptronData = new DataOutputStream(new FileOutputStream("perceptron.txt"));
-			for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
-				for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
-					perceptronData.writeDouble(neuron.hiddenweight[i][j]);
-				}
-			}
-			perceptronData.writeChars("\n");
-			for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
-				perceptronData.writeDouble(neuron.outputweight[i]);
-			}
-			perceptronData.close();
-			System.out.println("Wrote perceptron.txt file.");
-		} catch (Exception e) {
-			System.out.println("An error occurred writing to perceptron.txt file: ");
-			e.printStackTrace();
-		}
+		// try {
+		// DataOutputStream perceptronData = new DataOutputStream(new
+		// FileOutputStream("perceptron.txt"));
+		// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+		// for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+		// perceptronData.writeDouble(neuron.hiddenweight[i][j]);
+		// }
+		// }
+		// perceptronData.writeChars("\n");
+		// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+		// perceptronData.writeDouble(neuron.outputweight[i]);
+		// }
+		// perceptronData.close();
+		// System.out.println("Wrote perceptron.txt file.");
+		// } catch (Exception e) {
+		// System.out.println("An error occurred writing to perceptron.txt file: ");
+		// e.printStackTrace();
+		// }
 	}
 
 	private void testXOR() {
