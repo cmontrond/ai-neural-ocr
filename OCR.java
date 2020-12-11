@@ -419,88 +419,6 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 				+ firstNeuron.getPrediction(inputs) + " " + secondNeuron.getPrediction(inputs));
 	}
 
-	private void doMyTest() {
-		// Test code for My test
-
-		System.out.println("My Test...");
-
-		int[] inputs = new int[2];
-		int output = 0;
-
-		Perceptron neuron = new Perceptron(2);
-
-		long GIVE_UP = 10000;
-		int correctCount = 0;
-
-		for (int i = 0; i < GIVE_UP; i++) {
-
-			correctCount = 0;
-
-			inputs[0] = 0;
-			inputs[1] = 0;
-			output = 0;
-
-			boolean isNeuronRight = neuron.train(inputs, output);
-
-			if (isNeuronRight)
-				correctCount++;
-
-			inputs[0] = 0;
-			inputs[1] = 1;
-			output = 1;
-
-			isNeuronRight = neuron.train(inputs, output);
-
-			if (isNeuronRight)
-				correctCount++;
-
-			inputs[0] = 1;
-			inputs[1] = 0;
-			output = 1;
-
-			isNeuronRight = neuron.train(inputs, output);
-
-			if (isNeuronRight)
-				correctCount++;
-
-			// inputs[0] = 1;
-			// inputs[1] = 1;
-			// output = 0;
-
-			// isNeuronRight = neuron.train(inputs, output);
-
-			// if (isNeuronRight)
-			// correctCount++;
-
-			if (correctCount == 3)
-				break;
-		}
-
-		if (correctCount == 3) {
-			System.out.println("Learned it!");
-		} else {
-			System.out.println("Never learned it!");
-		}
-
-		// Test it: write this four times
-		inputs[0] = 0;
-		inputs[1] = 0;
-		System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": " + neuron.getPrediction(inputs));
-
-		inputs[0] = 0;
-		inputs[1] = 1;
-		System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": " + neuron.getPrediction(inputs));
-
-		inputs[0] = 1;
-		inputs[1] = 0;
-		System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": " + neuron.getPrediction(inputs));
-
-		// inputs[0] = 1;
-		// inputs[1] = 1;
-		// System.out.println("The prediction for " + inputs[0] + " " + inputs[1] + ": "
-		// + neuron.getPrediction(inputs));
-	}
-
 	// called on "ocr test", after the user draws and right-clicks the mouse
 	public void test() {
 		// TODO: MAKE A NEURAL NET OBJECT, READ THE WEIGHTS FROM A FILE perceptron.txt,
@@ -589,6 +507,144 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		System.out.println("Testing if the user drew and A: " + prediction);
 	}
 
+	private void testMultipleLetters() {
+		// TODO: MAKE A NEURAL NET OBJECT, READ THE WEIGHTS FROM A FILE perceptron.txt,
+		// USE THE NEURAL NET TO IDENTIFY THE LETTER
+
+		System.out.println("Testing for multiple letters...");
+
+		// make another array to hold the output letter for each sample
+		HashSet<Character> noDuplicates = new HashSet<>();
+
+		try {
+			// open the file
+			Scanner ocrData = new Scanner(new FileReader("ocrdata.txt"));
+
+			// for each sample,
+			while (ocrData.hasNext()) {
+				String line = ocrData.nextLine();
+				noDuplicates.add(line.charAt(0));
+			}
+			ocrData.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Have an HashMap of neurons
+		HashMap<Character, Perceptron> neurons = new HashMap<>();
+
+		System.out.println("Reading data from perceptron.txt ...");
+
+		// read the contents of perceptron.txt, and assign the Perceptron object's
+		// weights accordingly
+		// TODO
+		try {
+			Scanner perceptronData = new Scanner(new FileReader("perceptron.txt"));
+
+			noDuplicates.forEach(letter -> {
+
+				// make a Perceptron object
+				Perceptron neuron = new Perceptron(GRIDWIDTH * GRIDHEIGHT);
+
+				for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+					boolean exit = false;
+					for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+						String line = perceptronData.nextLine().trim();
+
+						if (line == "#") {
+							exit = true;
+							break;
+						}
+
+						neuron.hiddenweight[i][j] = Double.parseDouble(line);
+					}
+					if (exit) {
+						break;
+					}
+				}
+
+				perceptronData.nextLine();
+
+				for (int i = 0; i <= GRIDWIDTH * GRIDHEIGHT; i++) {
+					String line = perceptronData.nextLine().trim();
+
+					if (line.length() < 2) {
+						break;
+					}
+
+					neuron.outputweight[i] = Double.parseDouble(line);
+				}
+
+				// perceptronData.nextLine();
+
+				neurons.put(letter, neuron);
+			});
+
+			perceptronData.close();
+
+			System.out.println("Finish reading data from perceptron.txt!");
+
+			// for (int i = 0; i < GRIDWIDTH * GRIDHEIGHT; i++) {
+			// for (int j = 0; j <= GRIDWIDTH * GRIDHEIGHT; j++) {
+			// System.out.println("neuron.hiddenweight[" + i + "][" + j + "] -> " +
+			// neuron.hiddenweight[i][j]);
+			// }
+			// }
+
+			// for (int i = 0; i <= GRIDWIDTH * GRIDHEIGHT; i++) {
+			// System.out.println("neuron.outputweight[" + i + "] -> " +
+			// neuron.outputweight[i]);
+			// }
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// neurons.forEach((letter, neuron) -> {
+		// System.out.println("Neuron for letter " + letter + ",
+		// neuron.hiddenweight[199][200]: "
+		// + neuron.hiddenweight[199][200]);
+		// });
+
+		// Use function getSquareData to read what the user drew on the screen as an
+		// integer array
+		int[] userInput = this.getSquareData();
+
+		// int[] userInput = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		// 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+		// 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+		// 0, 0, 0, 0, 0, 0, 0, 1, 1,
+		// 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+		// 0, 0, 1, 1, 0, 0, 0, 0, 0,
+		// 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
+		// 0, 0, 0, 0, 0, 0, 0, 1, 1,
+		// 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+		// 0, 0, 1, 1, 0, 0, 0, 0, 0,
+		// 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		// 1, 1, 1, 1, 1, 1, 1, };
+
+		// Feed userInput to the perceptron, and print out whether or not it matched the
+		// letter you chose.
+		// TODO
+
+		HashMap<Character, Double> neuralOutputs = new HashMap<>();
+
+		neurons.forEach((letter, neuron) -> {
+			double neuralOutput = neuron.getRawPrediction(userInput);
+			neuralOutputs.put(letter, neuralOutput);
+		});
+
+		char letter = neuralOutputs.entrySet().stream()
+				.max((firstLetter, secondLetter) -> firstLetter.getValue() > secondLetter.getValue() ? 1 : -1).get()
+				.getKey();
+
+		// neuralOutputs.forEach((letter, neuralOutput) -> {
+		// System.out.println("Letter " + letter + ": " + neuralOutput);
+		// });
+
+		System.out.println("You wrote " + letter + ", am I right?");
+	}
+
 	// returns contents of all squares as array of 1 (filled) 0 (unfilled)
 	public int[] getSquareData() {
 		int[] data = new int[GRIDWIDTH * GRIDHEIGHT];
@@ -621,7 +677,8 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		if (operation == SAMPLE)
 			saveSample();
 		else if (operation == TEST)
-			test();
+			// test();
+			testMultipleLetters();
 		System.exit(0);
 	}
 
