@@ -241,7 +241,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		Perceptron neuron = new Perceptron(GRIDWIDTH * GRIDHEIGHT);
 
 		int correctCount = 0;
-		char randomLetter = 'A';
+		char randomLetter = 'Z';
 
 		// Put the training operation into a while loop, and train until the perceptron
 		// is answering perfectly for all inputs.
@@ -597,7 +597,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 			// }
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Debug: " + e.getMessage());
 		}
 
 		// neurons.forEach((letter, neuron) -> {
