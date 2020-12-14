@@ -34,7 +34,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 	// squared tall
 	public static final int GRIDHEIGHT = 20;
 	// window dimensions
-	public static final int SCREENWIDTH = 400, SCREENHEIGHT = 400;
+	public static final int SCREENWIDTH = 28, SCREENHEIGHT = 28;
 	// flags
 	public static final int SAMPLE = 1, TRAIN = 2, TEST = 3;
 
@@ -68,7 +68,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 	// and saves the weights to perceptron.txt
 	public void train() {
 		try {
-			Scanner ocrdata = new Scanner(new FileReader("ocrdata.txt"));
+			Scanner ocrdata = new Scanner(new FileReader("mnist_train_1000.txt"));
 			int linecount = 0; // keep track of how many samples are in the file
 			int sample_types = 0; // keep track of how many different types of letters are in the file
 			// go through the file and just count the samples
@@ -83,7 +83,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 			// make another array to hold the output letter for each sample
 			char[] sample_output = new char[linecount];
 			// reopen the file
-			ocrdata = new Scanner(new FileReader("ocrdata.txt"));
+			ocrdata = new Scanner(new FileReader("mnist_train_1000.txt"));
 			// for each sample,
 			for (int i = 0; i < linecount; i++) {
 				String line = ocrdata.nextLine();
@@ -103,15 +103,15 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 			// trainSingleLetter(linecount, sample_input, sample_output);
 
 			// Step: 4 - Train a perceptron on multiple letters
-			trainMultipleLetter(linecount, sample_input, sample_output);
+			trainMultipleNumbers(linecount, sample_input, sample_output);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void trainMultipleLetter(int linecount, int[][] sample_input, char[] sample_output) {
-		System.out.println("Training for multiple letters...");
+	private void trainMultipleNumbers(int linecount, int[][] sample_input, char[] sample_output) {
+		System.out.println("Training for multiple numbers...");
 
 		// Have an HashMap of neurons
 		HashMap<Character, Perceptron> neurons = new HashMap<>();
@@ -124,7 +124,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 
 		noDuplicates.forEach(letter -> {
 
-			System.out.println("Creating Perceptron for letter [" + letter + "].");
+			System.out.println("Creating Perceptron for number [" + letter + "].");
 
 			// Make a Perceptron object with enough inputs for every pixel on the screenand
 			// a single output.
@@ -210,7 +210,7 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		// make an output file perceptron.txt, and write all the hidden weights and
 		// output weights
 
-		neurons.forEach((letter, neuron) -> {
+		neurons.forEach((number, neuron) -> {
 			try {
 				// Do this for every neuron
 				PrintWriter perceptronData = new PrintWriter(new FileOutputStream(new File("perceptron.txt"), true));
@@ -511,14 +511,14 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 		// TODO: MAKE A NEURAL NET OBJECT, READ THE WEIGHTS FROM A FILE perceptron.txt,
 		// USE THE NEURAL NET TO IDENTIFY THE LETTER
 
-		System.out.println("Testing for multiple letters...");
+		System.out.println("Testing for multiple numbers...");
 
 		// make another array to hold the output letter for each sample
 		HashSet<Character> noDuplicates = new HashSet<>();
 
 		try {
 			// open the file
-			Scanner ocrData = new Scanner(new FileReader("ocrdata.txt"));
+			Scanner ocrData = new Scanner(new FileReader("mnist_train_1000.txt"));
 
 			// for each sample,
 			while (ocrData.hasNext()) {
@@ -629,20 +629,20 @@ public class OCR extends JComponent implements MouseListener, MouseMotionListene
 
 		HashMap<Character, Double> neuralOutputs = new HashMap<>();
 
-		neurons.forEach((letter, neuron) -> {
+		neurons.forEach((number, neuron) -> {
 			double neuralOutput = neuron.getRawPrediction(userInput);
-			neuralOutputs.put(letter, neuralOutput);
+			neuralOutputs.put(number, neuralOutput);
 		});
 
-		char letter = neuralOutputs.entrySet().stream()
-				.max((firstLetter, secondLetter) -> firstLetter.getValue() > secondLetter.getValue() ? 1 : -1).get()
+		char number = neuralOutputs.entrySet().stream()
+				.max((firstNumber, secondNumber) -> firstNumber.getValue() > secondNumber.getValue() ? 1 : -1).get()
 				.getKey();
 
 		// neuralOutputs.forEach((letter, neuralOutput) -> {
 		// System.out.println("Letter " + letter + ": " + neuralOutput);
 		// });
 
-		System.out.println("You wrote " + letter + ", am I right?");
+		System.out.println("You wrote " + number + ", am I right?");
 	}
 
 	// returns contents of all squares as array of 1 (filled) 0 (unfilled)
