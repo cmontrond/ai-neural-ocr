@@ -47,9 +47,12 @@ java OCR test
 ```
 
 ## What Was Successfully Accomplished
-* 1 ✔
-* 2 ✔
-* 3 ❌
+* Perceptron able to be trained to recognize a single letter ✔
+* Perceptron able to be trained to recognize multiple letters ✔
+
+## What Was Attempted
+* Converted MNIST database to readable format for this project ✔
+* Tried running to train the network using the MNIST database, but that took too long ✔
 
 ## Built With
 
